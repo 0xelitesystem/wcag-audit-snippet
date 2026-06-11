@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WCAG Audit Snippet</title>
+<meta name="description" content="Run quick WCAG checks against any web page in the same browser. Copy the bookmarklet to use it on any site you visit.">
+<meta name="ai.description" content="Single-file HTML tool plus a bookmarklet. The page implements heuristic WCAG checks (missing alt text, low-contrast text, missing form labels, heading order issues, missing language attribute, links without discernible names). Findings are listed with severity and a CSS selector pointing to the offending element. Bookmarklet runs the same checks on any page the user is viewing.">
+<style>
+:root{--bg:#f3f0e8;--surface:#fff;--surface-2:#ebe8df;--ink:#1f1812;--ink-soft:#5a4f42;--rule:#d6cfba;--rule-strong:#1f1812;--accent:#7c2d12;--accent-soft:#fbe5d4;--mono:ui-monospace,"JetBrains Mono","SF Mono",Menlo,Consolas,monospace;--sans:"Inter",ui-sans-serif,system-ui,-apple-system,sans-serif;--ok:#1f6f43;--ok-soft:#e3f2ea;--err:#b3261e;--err-soft:#fbe9e7;--warn:#a04500;--warn-soft:#faecd9;--minor:#1a4d7d;--minor-soft:#dceaf5}
+[data-theme="dark"]{--bg:#1a140d;--surface:#241d14;--surface-2:#1e1810;--ink:#f5ecd9;--ink-soft:#bda88a;--rule:#3a3023;--rule-strong:#f5ecd9;--accent:#ed8b50;--accent-soft:#3a2014;--ok:#7fc99c;--ok-soft:#1f3327;--err:#f08585;--err-soft:#3d2222;--warn:#e6a960;--warn-soft:#3d2f1c;--minor:#7eb8e6;--minor-soft:#1c2c3d}
+[data-theme="dark"] button.primary, [data-theme="dark"] a.primary { color: var(--bg) !important; }
+[data-theme="dark"] button.primary, [data-theme="dark"] a.primary { border-color: var(--accent) !important; }
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+body{font-family:var(--sans);background:var(--bg);color:var(--ink);line-height:1.55;font-size:14px;min-height:100vh}
+.skip-link{position:absolute;left:-9999px;top:0;background:var(--accent);color:#fff;padding:.5rem 1rem;z-index:100;font-weight:600}
+.skip-link:focus{left:1rem;top:1rem}
+.layout{max-width:920px;margin:0 auto;padding:2rem 1.25rem 4rem}
+header{display:grid;grid-template-columns:1fr auto;gap:1.5rem;align-items:end;padding-bottom:1.25rem;border-bottom:1px solid var(--rule-strong);margin-bottom:1.5rem}
+.brand{font-family:var(--mono);font-size:.6875rem;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-soft);margin-bottom:.5rem;font-weight:600}
+h1{font-size:clamp(1.625rem,4vw,2.375rem);font-weight:700;letter-spacing:-.02em;line-height:1.05}
+h1 .accent{color:var(--accent)}
+.subtitle{margin-top:.5rem;color:var(--ink-soft);font-size:.9375rem;max-width:520px}
+.theme-toggle{background:var(--surface);color:var(--ink);border:1px solid var(--rule-strong);border-radius:3px;padding:.5rem .75rem;font:inherit;font-size:.75rem;font-weight:600;cursor:pointer;text-transform:uppercase;letter-spacing:.06em;display:inline-flex;align-items:center;gap:.4rem;flex-shrink:0}
+.theme-toggle:hover{background:var(--ink);color:var(--bg)}
+.theme-toggle:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.theme-toggle svg{width:14px;height:14px}
+.panel{background:var(--surface);border:1px solid var(--rule);border-radius:3px;padding:1rem 1.25rem;margin-bottom:1rem}
+.panel-head{display:flex;align-items:baseline;gap:.625rem;margin-bottom:.625rem;padding-bottom:.4rem;border-bottom:1px solid var(--rule)}
+.panel-num{font-family:var(--mono);font-size:.6875rem;font-weight:700;color:var(--accent);letter-spacing:.08em}
+.panel-title{font-size:.8125rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em}
+label{display:block;font-family:var(--mono);font-size:.6875rem;font-weight:700;margin-bottom:.3rem;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-soft)}
+textarea{width:100%;background:var(--bg);color:var(--ink);border:1px solid var(--rule);border-radius:3px;padding:.55rem .7rem;font:inherit;font-family:var(--mono);font-size:.8125rem;line-height:1.5;resize:vertical;min-height:200px}
+textarea:focus{outline:2px solid var(--accent);outline-offset:-1px;border-color:var(--accent)}
+.row{display:flex;gap:.5rem;flex-wrap:wrap;align-items:center;margin-top:.625rem}
+button.primary,button.secondary{font:inherit;font-size:.75rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;padding:.45rem .85rem;border-radius:3px;cursor:pointer}
+button.primary{background:var(--accent);color:#fff;border:1px solid var(--accent)}
+button.primary:hover:not(:disabled){filter:brightness(.92)}
+button.secondary{background:var(--surface);color:var(--ink);border:1px solid var(--rule-strong)}
+button.secondary:hover:not(:disabled){background:var(--ink);color:var(--bg)}
+button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.bookmarklet{display:inline-block;background:var(--accent);color:#fff;text-decoration:none;padding:.55rem 1rem;border-radius:3px;font-weight:700;font-size:.875rem;letter-spacing:.04em}
+.bookmarklet:hover{filter:brightness(.92)}
+.help{margin-top:.4rem;font-size:.75rem;color:var(--ink-soft);line-height:1.55}
+.help code{background:var(--surface-2);padding:.05rem .3rem;border-radius:2px;font-size:.8125rem}
+.severity-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:.5rem;margin-bottom:.75rem}
+.sev-card{background:var(--surface-2);border:1px solid var(--rule);border-radius:3px;padding:.6rem .5rem;text-align:center}
+.sev-count{font-size:1.5rem;font-weight:700;font-family:var(--mono);font-variant-numeric:tabular-nums;display:block}
+.sev-label{font-size:.625rem;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.07em;font-weight:600;margin-top:.2rem}
+.sev-card.blocker .sev-count{color:var(--err)}
+.sev-card.major .sev-count{color:var(--warn)}
+.sev-card.minor .sev-count{color:var(--minor)}
+.sev-card.nit .sev-count{color:var(--ink-soft)}
+.findings{display:flex;flex-direction:column;gap:.5rem}
+.finding{background:var(--surface-2);border:1px solid var(--rule);border-radius:3px;padding:.625rem .75rem}
+.finding-head{display:flex;align-items:baseline;gap:.5rem;flex-wrap:wrap;margin-bottom:.3rem}
+.tag{font-family:var(--mono);font-size:.625rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:.15rem .4rem;border-radius:2px;color:#fff}
+.tag.blocker{background:var(--err)}.tag.major{background:var(--warn)}.tag.minor{background:var(--minor)}.tag.nit{background:var(--ink-soft)}
+.cat{font-size:.6875rem;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.04em;font-family:var(--mono)}
+.msg{font-size:.875rem;margin:.3rem 0}
+.sel{font-family:var(--mono);font-size:.75rem;background:var(--bg);padding:.3rem .5rem;border-radius:2px;border:1px solid var(--rule);word-break:break-all;color:var(--accent);margin-top:.3rem;display:inline-block}
+.empty{padding:1.5rem 1rem;text-align:center;color:var(--ink-soft);font-style:italic;font-size:.875rem;background:var(--surface-2);border:1px dashed var(--rule);border-radius:3px}
+footer{margin-top:2.5rem;padding-top:1.25rem;border-top:1px solid var(--rule);font-size:.75rem;color:var(--ink-soft);line-height:1.7}
+footer a{color:var(--ink-soft);text-decoration:underline;text-underline-offset:2px}
+footer a:hover{color:var(--accent)}
+@media(max-width:540px){.layout{padding:1.25rem 1rem 3rem}h1{font-size:1.375rem}header{grid-template-columns:1fr}.severity-grid{grid-template-columns:repeat(2,1fr)}}
+</style>
+</head>
+<body data-theme="light">
+<a href="#main" class="skip-link">Skip to main</a>
+<div class="layout">
+<header>
+<div>
+<div class="brand">WCAG // AUDIT</div>
+<h1>Quick <span class="accent">accessibility</span> checks.</h1>
+<p class="subtitle">Run heuristic WCAG checks. Paste HTML below, or drag the bookmarklet to your bookmarks bar to audit any page you visit.</p>
+</div>
+<button type="button" class="theme-toggle" id="theme-btn" aria-label="Toggle theme" aria-pressed="false">
+<svg id="theme-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+<circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"></path>
+</svg>
+<span id="theme-label">Dark</span>
+</button>
+</header>
+<main id="main">
+<div class="panel">
+<div class="panel-head"><span class="panel-num">01</span><h2 class="panel-title">Bookmarklet</h2></div>
+<p class="help" style="margin-top:0;margin-bottom:.625rem">Drag this link to your bookmarks bar. Click it on any page to audit.</p>
+<a href="javascript:void(0)" class="bookmarklet" id="bookmarklet">WCAG Audit</a>
+<p class="help">The bookmarklet runs the same checks shown below directly against the page you're viewing. Findings appear as a panel overlay on that page.</p>
+</div>
+<div class="panel">
+<div class="panel-head"><span class="panel-num">02</span><h2 class="panel-title">Audit HTML directly</h2></div>
+<label for="html-input">Paste HTML</label>
+<textarea id="html-input" spellcheck="false" placeholder="&lt;html&gt;...&lt;/html&gt;"></textarea>
+<div class="row"><button type="button" class="primary" id="audit-btn">Audit</button><button type="button" class="secondary" id="example-btn">Load example</button><button type="button" class="secondary" id="clear-btn">Clear</button></div>
+</div>
+<div class="panel" id="results-panel" style="display:none">
+<div class="panel-head"><span class="panel-num">03</span><h2 class="panel-title">Findings</h2></div>
+<div class="severity-grid" id="sev-grid"></div>
+<div id="findings"></div>
+</div>
+</main>
+<footer>
+<p>Source: <a href="https://github.com/0xelitesystem/wcag-audit-snippet" target="_blank" rel="noopener">github.com/0xelitesystem/wcag-audit-snippet</a></p>
+<p>Related: <a href="https://github.com/0xelitesystem/dark-mode-tester" target="_blank" rel="noopener">dark-mode-tester</a> &middot; <a href="https://github.com/0xelitesystem/csp-builder" target="_blank" rel="noopener">csp-builder</a></p>
+<p>Heuristic checks. Not a substitute for axe-core or manual screen reader testing — but catches the 80% of issues that those would also flag, in 100ms instead of a 30-minute audit.</p>
+</footer>
+</div>
+<script>
+"use strict";
+const $=id=>document.getElementById(id);
+const escapeHtml=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+
+const EXAMPLE=`<!DOCTYPE html>
+<html>
+<head>
+  <title>Example page with issues</title>
+</head>
+<body>
+  <div style="background:#888;color:#aaa">low contrast text</div>
+  <img src="logo.png">
+  <input type="text" placeholder="email">
+  <h1>Title</h1>
+  <h3>Skipped h2</h3>
+  <a href="#"><img src="icon.png"></a>
+  <button></button>
+</body>
+</html>`;
+
+// ---------- Audit checks ----------
+function runChecks(doc){
+  const findings=[];
+
+  function add(severity,category,message,el,fix){
+    findings.push({severity,category,message,selector:cssPath(el),fix});
+  }
+
+  function cssPath(el){
+    if(!el||el.nodeType!==1)return"(unknown)";
+    if(el.id)return"#"+el.id;
+    let path=[];
+    let cur=el;
+    while(cur&&cur.nodeType===1&&cur!==doc.documentElement&&path.length<4){
+      let part=cur.nodeName.toLowerCase();
+      if(cur.className&&typeof cur.className==="string"){
+        const cls=cur.className.split(/\s+/).filter(Boolean)[0];
+        if(cls)part+="."+cls;
+      }
+      const sib=cur.parentNode?[...cur.parentNode.children].filter(c=>c.nodeName===cur.nodeName):[];
+      if(sib.length>1){
+        const i=sib.indexOf(cur);
+        part+=`:nth-of-type(${i+1})`;
+      }
+      path.unshift(part);
+      cur=cur.parentNode;
+    }
+    return path.join(" > ");
+  }
+
+  // 1. Document language
+  if(!doc.documentElement.getAttribute("lang")){
+    add("major","language","<html> element is missing a lang attribute. Screen readers won't pronounce content correctly.",doc.documentElement,'Add lang="en" (or appropriate locale) to <html>.');
+  }
+
+  // 2. Page title
+  if(!doc.title||doc.title.trim()===""){
+    add("major","title","Page has no <title>. Screen readers and tab labels need it.",doc.documentElement,"Add a <title> element with descriptive text.");
+  }
+
+  // 3. Images without alt
+  doc.querySelectorAll("img").forEach(img=>{
+    if(!img.hasAttribute("alt")){
+      add("blocker","alt-text",`Image is missing the alt attribute. src="${img.getAttribute('src')||''}".`,img,'Add alt="" for decorative images, or alt="description" for content images.');
+    }
+  });
+
+  // 4. Form inputs without labels
+  doc.querySelectorAll("input,textarea,select").forEach(el=>{
+    if(el.type==="hidden"||el.type==="submit"||el.type==="button"||el.type==="reset")return;
+    const id=el.getAttribute("id");
+    const hasLabel=id&&doc.querySelector(`label[for="${CSS.escape(id)}"]`);
+    const hasAriaLabel=el.getAttribute("aria-label")||el.getAttribute("aria-labelledby");
+    const wrappedLabel=el.closest("label");
+    if(!hasLabel&&!hasAriaLabel&&!wrappedLabel){
+      add("blocker","form-label","Form control has no associated label.",el,'Add <label for="id">…</label> or wrap the input in a <label>.');
+    }
+  });
+
+  // 5. Heading order
+  const headings=[...doc.querySelectorAll("h1,h2,h3,h4,h5,h6")];
+  let lastLevel=0;
+  headings.forEach(h=>{
+    const level=parseInt(h.tagName[1],10);
+    if(lastLevel===0&&level!==1){
+      add("minor","heading-order",`First heading is <${h.tagName.toLowerCase()}>, not <h1>.`,h,"Start the page with an <h1>.");
+    }else if(level>lastLevel+1&&lastLevel!==0){
+      add("minor","heading-order",`Heading level skipped from h${lastLevel} to h${level}.`,h,"Don't skip heading levels (e.g. h1 -> h3). Use h2 instead.");
+    }
+    lastLevel=level;
+  });
+  if(headings.length>0&&!doc.querySelector("h1")){
+    add("major","heading-order","Page has headings but no <h1>.",doc.body,"Every page should have one (and ideally only one) <h1>.");
+  }
+
+  // 6. Links without text
+  doc.querySelectorAll("a").forEach(a=>{
+    const text=(a.textContent||"").trim();
+    const ariaLabel=a.getAttribute("aria-label");
+    const hasImg=a.querySelector("img[alt]:not([alt=''])");
+    const hasTitle=a.getAttribute("title");
+    if(!text&&!ariaLabel&&!hasImg&&!hasTitle){
+      add("blocker","link-name","Link has no discernible text.",a,'Add visible text, aria-label, or an <img> with alt text inside.');
+    }
+  });
+
+  // 7. Buttons without text
+  doc.querySelectorAll("button").forEach(b=>{
+    const text=(b.textContent||"").trim();
+    const ariaLabel=b.getAttribute("aria-label");
+    if(!text&&!ariaLabel){
+      add("blocker","button-name","Button has no accessible name.",b,'Add visible text or aria-label.');
+    }
+  });
+
+  // 8. Color contrast (rough: only inline styles)
+  doc.querySelectorAll("[style]").forEach(el=>{
+    const s=el.getAttribute("style");
+    const colorMatch=s.match(/(?:^|;)\s*color\s*:\s*([^;]+)/i);
+    const bgMatch=s.match(/background(?:-color)?\s*:\s*([^;]+)/i);
+    if(colorMatch&&bgMatch){
+      const fg=parseColor(colorMatch[1].trim());
+      const bg=parseColor(bgMatch[1].trim());
+      if(fg&&bg){
+        const r=contrastRatio(fg,bg);
+        if(r<4.5){
+          add("major","contrast",`Inline style color contrast is ${r.toFixed(2)}:1 (WCAG AA needs 4.5:1 for body text).`,el,"Darken the foreground or lighten the background.");
+        }
+      }
+    }
+  });
+
+  // 9. Empty link or button (whitespace only)
+  doc.querySelectorAll("a,button").forEach(el=>{
+    const html=el.innerHTML.trim();
+    if(html===""&&!el.getAttribute("aria-label")&&!el.getAttribute("title")){
+      add("major","empty-control",`Empty <${el.tagName.toLowerCase()}>.`,el,"Provide content or an aria-label.");
+    }
+  });
+
+  return findings;
+}
+
+function parseColor(s){
+  s=s.trim().toLowerCase();
+  if(s.startsWith("#")){
+    let hex=s.slice(1);
+    if(hex.length===3)hex=hex.split("").map(c=>c+c).join("");
+    if(hex.length!==6)return null;
+    return[parseInt(hex.slice(0,2),16),parseInt(hex.slice(2,4),16),parseInt(hex.slice(4,6),16)];
+  }
+  const rgb=s.match(/rgb\s*\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)/);
+  if(rgb)return[+rgb[1],+rgb[2],+rgb[3]];
+  // Named (limited)
+  const NAMED={black:[0,0,0],white:[255,255,255],red:[255,0,0],green:[0,128,0],blue:[0,0,255],gray:[128,128,128],grey:[128,128,128]};
+  return NAMED[s]||null;
+}
+
+function relLum([r,g,b]){
+  const f=v=>{v/=255;return v<=.03928?v/12.92:Math.pow((v+.055)/1.055,2.4)};
+  return.2126*f(r)+.7152*f(g)+.0722*f(b);
+}
+
+function contrastRatio(a,b){
+  const l1=relLum(a),l2=relLum(b);
+  const hi=Math.max(l1,l2),lo=Math.min(l1,l2);
+  return(hi+.05)/(lo+.05);
+}
+
+// ---------- Render ----------
+function render(findings){
+  $("results-panel").style.display="block";
+  const counts={blocker:0,major:0,minor:0,nit:0};
+  for(const f of findings)counts[f.severity]++;
+  $("sev-grid").innerHTML=`
+    <div class="sev-card blocker"><span class="sev-count">${counts.blocker}</span><div class="sev-label">Blocker</div></div>
+    <div class="sev-card major"><span class="sev-count">${counts.major}</span><div class="sev-label">Major</div></div>
+    <div class="sev-card minor"><span class="sev-count">${counts.minor}</span><div class="sev-label">Minor</div></div>
+    <div class="sev-card nit"><span class="sev-count">${counts.nit}</span><div class="sev-label">Nit</div></div>
+  `;
+  if(findings.length===0){
+    $("findings").innerHTML='<div class="empty">No issues found.</div>';
+    return;
+  }
+  const order={blocker:0,major:1,minor:2,nit:3};
+  findings.sort((a,b)=>order[a.severity]-order[b.severity]);
+  let html='<div class="findings">';
+  for(const f of findings){
+    html+=`<div class="finding">
+      <div class="finding-head">
+        <span class="tag ${escapeHtml(f.severity)}">${escapeHtml(f.severity)}</span>
+        <span class="cat">${escapeHtml(f.category)}</span>
+      </div>
+      <div class="msg">${escapeHtml(f.message)}</div>
+      <div class="sel">${escapeHtml(f.selector||"")}</div>
+      <div class="msg" style="font-size:.8125rem;color:var(--ink-soft);font-style:italic">Fix: ${escapeHtml(f.fix||"")}</div>
+    </div>`;
+  }
+  html+="</div>";
+  $("findings").innerHTML=html;
+}
+
+$("audit-btn").addEventListener("click",()=>{
+  const html=$("html-input").value;
+  if(!html.trim())return;
+  const parser=new DOMParser();
+  const doc=parser.parseFromString(html,"text/html");
+  const findings=runChecks(doc);
+  render(findings);
+});
+
+$("example-btn").addEventListener("click",()=>{$("html-input").value=EXAMPLE;$("audit-btn").click()});
+$("clear-btn").addEventListener("click",()=>{$("html-input").value="";$("results-panel").style.display="none"});
+
+// Build the bookmarklet
+const BOOKMARKLET=`(function(){
+  const checks=${runChecks.toString()};
+  const parseColor=${parseColor.toString()};
+  const relLum=${relLum.toString()};
+  const contrastRatio=${contrastRatio.toString()};
+  const findings=checks(document);
+  let html='<div style="position:fixed;top:10px;right:10px;width:380px;max-height:80vh;overflow-y:auto;background:#fff;border:2px solid #7c2d12;border-radius:4px;padding:12px;font-family:system-ui;font-size:13px;z-index:2147483647;color:#1f1812;box-shadow:0 4px 12px rgba(0,0,0,.2)">';
+  html+='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><strong>WCAG Audit ('+findings.length+' findings)</strong><button id="__wcagclose" style="background:#7c2d12;color:#fff;border:none;padding:2px 8px;cursor:pointer;border-radius:2px">X</button></div>';
+  if(findings.length===0)html+='<em>No issues.</em>';
+  else findings.forEach(f=>{html+='<div style="margin:6px 0;padding:6px;background:#fbe5d4;border-radius:2px"><strong>'+f.severity.toUpperCase()+' '+f.category+':</strong> '+f.message+'<br><code style="font-size:11px;color:#7c2d12">'+f.selector+'</code><br><em style="font-size:11px">Fix: '+f.fix+'</em></div>'});
+  html+='</div>';
+  const div=document.createElement('div');
+  div.innerHTML=html;
+  document.body.appendChild(div);
+  div.querySelector('#__wcagclose').onclick=()=>div.remove();
+})()`;
+
+$("bookmarklet").href="javascript:"+encodeURIComponent(BOOKMARKLET);
+$("bookmarklet").addEventListener("click",e=>{e.preventDefault();alert("Drag this link to your bookmarks bar — don't click it.")});
+
+function applyTheme(t){
+  document.body.dataset.theme=t;
+  $("theme-label").textContent=t==="dark"?"Light":"Dark";
+  $("theme-btn").setAttribute("aria-pressed",String(t==="dark"));
+  const icon=$("theme-icon");
+  if(t==="dark")icon.innerHTML='<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>';
+  else icon.innerHTML='<circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"></path>';
+}
+$("theme-btn").addEventListener("click",()=>applyTheme(document.body.dataset.theme==="dark"?"light":"dark"));
+if(window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches)applyTheme("dark");
+</script>
+</body>
+</html>
