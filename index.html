@@ -108,7 +108,7 @@ footer a:hover{color:var(--accent)}
 <footer>
 <p>Source: <a href="https://github.com/0xelitesystem/wcag-audit-snippet" target="_blank" rel="noopener">github.com/0xelitesystem/wcag-audit-snippet</a></p>
 <p>Related: <a href="https://github.com/0xelitesystem/dark-mode-tester" target="_blank" rel="noopener">dark-mode-tester</a> &middot; <a href="https://github.com/0xelitesystem/csp-builder" target="_blank" rel="noopener">csp-builder</a></p>
-<p>Heuristic checks. Not a substitute for axe-core or manual screen reader testing — but catches the 80% of issues that those would also flag, in 100ms instead of a 30-minute audit.</p>
+<p>Heuristic checks. Not a substitute for axe-core or manual screen reader testing, but catches the 80% of issues that those would also flag, in 100ms instead of a 30-minute audit.</p>
 </footer>
 </div>
 <script>
@@ -347,7 +347,7 @@ const BOOKMARKLET=`(function(){
 })()`;
 
 $("bookmarklet").href="javascript:"+encodeURIComponent(BOOKMARKLET);
-$("bookmarklet").addEventListener("click",e=>{e.preventDefault();alert("Drag this link to your bookmarks bar — don't click it.")});
+$("bookmarklet").addEventListener("click",e=>{e.preventDefault();alert("Drag this link to your bookmarks bar, don't click it.")});
 
 function applyTheme(t){
   document.body.dataset.theme=t;
