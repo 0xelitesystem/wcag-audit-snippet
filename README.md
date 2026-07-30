@@ -66,6 +66,10 @@ The bookmarklet code is around 2.5 KB minified. If your browser has a strict CSP
 - Uses `DOMParser` to audit pasted HTML safely
 - Light and dark themes with OS preference detection
 
+## More
+
+Part of a catalog of single-file browser tools and plain-language references, all MIT licensed and dependency-free: [0xelitesystem.github.io](https://0xelitesystem.github.io/). Built by [elitesystem.ai](https://elitesystem.ai).
+
 ## License
 
 MIT. See [LICENSE](LICENSE).
