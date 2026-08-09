@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>WCAG Audit Snippet</title>
+<title>WCAG Audit Snippet - quick heuristic WCAG checks for any web page</title>
 <meta property="og:title" content="WCAG Audit Snippet">
 <meta property="og:description" content="wcag-audit-snippet">
 <meta property="og:url" content="https://0xelitesystem.github.io/wcag-audit-snippet/">
@@ -111,7 +111,7 @@ footer a:hover{color:var(--accent)}
 </div>
 </main>
 <footer>
-<p>Source: <a href="https://github.com/0xelitesystem/wcag-audit-snippet" target="_blank" rel="noopener">github.com/0xelitesystem/wcag-audit-snippet</a></p>
+<p>Source: <a href="https://github.com/0xelitesystem/wcag-audit-snippet" target="_blank" rel="noopener">github.com/0xelitesystem/wcag-audit-snippet</a> &middot; <a href="https://elitesystem.ai" target="_blank" rel="noopener">An elitesystem.ai tool</a> &middot; <a href="https://0xelitesystem.github.io/" target="_blank" rel="noopener">More tools</a></p>
 <p>Related: <a href="https://github.com/0xelitesystem/dark-mode-tester" target="_blank" rel="noopener">dark-mode-tester</a> &middot; <a href="https://github.com/0xelitesystem/csp-builder" target="_blank" rel="noopener">csp-builder</a></p>
 <p>Heuristic checks. Not a substitute for axe-core or manual screen reader testing, but catches the 80% of issues that those would also flag, in 100ms instead of a 30-minute audit.</p>
 </footer>
@@ -194,7 +194,7 @@ function runChecks(doc){
     const hasAriaLabel=el.getAttribute("aria-label")||el.getAttribute("aria-labelledby");
     const wrappedLabel=el.closest("label");
     if(!hasLabel&&!hasAriaLabel&&!wrappedLabel){
-      add("blocker","form-label","Form control has no associated label.",el,'Add <label for="id">…</label> or wrap the input in a <label>.');
+      add("blocker","form-label","Form control has no associated label.",el,'Add <label for="id">...</label> or wrap the input in a <label>.');
     }
   });
 
