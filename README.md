@@ -38,7 +38,7 @@ Open `index.html` in any browser, or visit the hosted demo at `https://0xelitesy
 | Major | Empty `<a>` or `<button>` (whitespace only) |
 | Major | Page has headings but no `<h1>` |
 | Minor | First heading is not `<h1>` |
-| Minor | Heading levels skipped (h1 → h3) |
+| Minor | Heading levels skipped (h1 -> h3) |
 
 Each finding includes a CSS selector pointing to the offending element and a concrete fix suggestion.
 
