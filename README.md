@@ -4,7 +4,7 @@ Quick heuristic WCAG checks for any web page. Single HTML file plus a bookmarkle
 
 **Live demo:** https://0xelitesystem.github.io/wcag-audit-snippet/
 
-## Why
+## Why this exists
 
 Real accessibility audits with axe-core, WAVE, and screen readers are essential, but they take 30 minutes per page. This catches the 80% of issues that those tools would also flag, in 100ms, on any page.
 
@@ -14,7 +14,9 @@ Use this for:
 - Auditing pages you don't own (with the bookmarklet)
 - Teaching: the bookmarklet's findings are educational
 
-## Use it
+It is one HTML file with no dependencies and no tracking, released under MIT.
+
+## Use
 
 Open `index.html` in any browser, or visit the hosted demo at `https://0xelitesystem.github.io/wcag-audit-snippet/` once Pages is enabled.
 
@@ -23,6 +25,27 @@ Open `index.html` in any browser, or visit the hosted demo at `https://0xelitesy
 1. **Bookmarklet**: drag the "WCAG Audit" link to your bookmarks bar. Click it on any page.
 2. **Paste HTML**: paste any HTML into the textarea on the demo page and click Audit.
 3. **"Load example"**: see the tool find issues in a sample page with deliberate problems.
+
+## Privacy
+
+The page makes no network requests. Pasted HTML is parsed with `DOMParser` inside your browser and is never sent anywhere. The bookmarklet runs inside the page you click it on, reads that page's DOM, and draws its findings in a panel on the same page; it sends nothing anywhere. The page saves one thing in localStorage: your light or dark theme choice, under the key `theme`.
+
+## Run locally
+
+```
+git clone https://github.com/0xelitesystem/wcag-audit-snippet
+cd wcag-audit-snippet
+```
+
+Open `index.html` in any browser. Or serve the folder and visit http://localhost:8000:
+
+```
+python -m http.server 8000
+```
+
+## Build
+
+No build step. The whole tool is one `index.html` file with inline CSS and JavaScript.
 
 ## What it checks
 
