@@ -100,5 +100,5 @@ MIT. See [LICENSE](LICENSE).
 ## Related
 
 - [dark-mode-tester](https://github.com/0xelitesystem/dark-mode-tester), preview a page in light/dark/auto
-- [csp-builder](https://github.com/0xelitesystem/csp-builder), build CSP headers visually
+- [csp-header-visual-builder](https://github.com/0xelitesystem/csp-header-visual-builder), build CSP headers visually
 - [readme-slop-checker](https://github.com/0xelitesystem/readme-slop-checker), audit a README for AI cliches
