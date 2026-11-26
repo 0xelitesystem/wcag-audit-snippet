@@ -374,10 +374,11 @@ const BOOKMARKLET=`(function(){
   const relLum=${relLum.toString()};
   const contrastRatio=${contrastRatio.toString()};
   const findings=checks(document);
+  const e=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
   let html='<div style="position:fixed;top:10px;right:10px;width:380px;max-height:80vh;overflow-y:auto;background:#fff;border:2px solid #7c2d12;border-radius:4px;padding:12px;font-family:system-ui;font-size:13px;z-index:2147483647;color:#1f1812;box-shadow:0 4px 12px rgba(0,0,0,.2)">';
   html+='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><strong>WCAG Audit ('+findings.length+' findings)</strong><button id="__wcagclose" style="background:#7c2d12;color:#fff;border:none;padding:2px 8px;cursor:pointer;border-radius:2px">X</button></div>';
   if(findings.length===0)html+='<em>No issues.</em>';
-  else findings.forEach(f=>{html+='<div style="margin:6px 0;padding:6px;background:#fbe5d4;border-radius:2px"><strong>'+f.severity.toUpperCase()+' '+f.category+':</strong> '+f.message+'<br><code style="font-size:11px;color:#7c2d12">'+f.selector+'</code><br><em style="font-size:11px">Fix: '+f.fix+'</em></div>'});
+  else findings.forEach(f=>{html+='<div style="margin:6px 0;padding:6px;background:#fbe5d4;border-radius:2px"><strong>'+e(f.severity.toUpperCase())+' '+e(f.category)+':</strong> '+e(f.message)+'<br><code style="font-size:11px;color:#7c2d12">'+e(f.selector)+'</code><br><em style="font-size:11px">Fix: '+e(f.fix)+'</em></div>'});
   html+='</div>';
   const div=document.createElement('div');
   div.innerHTML=html;
